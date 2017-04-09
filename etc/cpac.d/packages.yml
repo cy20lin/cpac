@@ -1,0 +1,72 @@
+dlib:
+  repo: https://github.com/davisking/dlib
+range-v3:
+  repo: https://github.com/ericniebler/range-v3
+meta:
+  repo: https://github.com/ericniebler/meta
+cereal:
+  repo: https://github.com/USCiLab/cereal
+fmt:
+  repo: https://github.com/fmtlib/fmt
+Catch:
+  repo: https://github.com/philsquared/Catch
+opencv:
+  repo: https://github.com/opencv/opencv
+cling:
+  repo: https://github.com/vgvassilev/cling
+rtags:
+  repo: https://github.com/Andersbakken/rtags
+cpp-netlib:
+  repo: https://github.com/cpp-netlib/cpp-netlib
+jsoncpp:
+  repo: https://github.com/open-source-parsers/jsoncpp
+json:
+  repo: https://github.com/nlohmann/json
+yaml-cpp:
+  repo: https://github.com/jbeder/yaml-cpp
+stacktrace:
+  repo: https://github.com/apolukhin/stacktrace
+cpp-markdown:
+  repo: https://github.com/sevenjay/cpp-markdown
+sqlpp11:
+  repo: https://github.com/rbock/sqlpp11
+msgpack-c:
+  repo: https://github.com/msgpack/msgpack-c
+ponder:
+  repo: https://github.com/billyquith/ponder
+visit_struct:
+  repo: https://github.com/cbeck88/visit_struct
+jni.hpp:
+  repo: https://github.com/mapbox/jni.hpp
+jni:
+  repo: https://github.com/mapbox/jni.hpp
+backward-cpp:
+  repo: https://github.com/bombela/backward-cpp
+iod:
+  repo: https://github.com/matt-42/iod
+fplus:
+  repo: https://github.com/Dobiasd/FunctionalPlus
+FunctionalPlus:
+  repo: https://github.com/Dobiasd/FunctionalPlus
+Beast:
+  repo: https://github.com/vinniefalco/Beast
+BoostBeast:
+  repo: https://github.com/vinniefalco/Beast
+cxxopts:
+  repo: https://github.com/jarro2783/cxxopts
+stackless_coroutine:
+  repo: https://github.com/jbandela/stackless_coroutine
+FakeIt:
+  repo: https://github.com/eranpeer/FakeIt
+magic_get:
+  repo: https://github.com/apolukhin/magic_get
+eggs_variant:
+  repo: https://github.com/eggs-cpp/variant
+# BoostProcess:
+#   repo: https://github.com/klemens-morgenstern/boost-process
+# boost:
+#   repo: https://github.com/boostorg/boost
+# evpp:
+#   repo: https://github.com/Qihoo360/evpp
+# co2:
+#   repo: https://github.com/jamboree/co2

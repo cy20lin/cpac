@@ -1,0 +1,55 @@
+#+TITLE: cpac -- C/C++ package retrieval
+#+STARTUP: showall
+#+AUTHOR: ChienYu Lin
+#+EMAIL: cy20lin@google.com
+
+* Setup
+
+** download
+
+  #+BEGIN_SRC sh
+    git clone https://github.com/cy20lin/cpac
+  #+END_SRC
+
+** install
+   
+  #+BEGIN_SRC sh
+    ./cpac/install.sh /install/prefix
+  #+END_SRC
+
+* Quick start
+
+  You can install packages with following command:
+
+  #+BEGIN_SRC sh
+    cpac {-S --sync} <package(s)> [-- <cmake_configure_option(s)>]
+  #+END_SRC
+ 
+  Where,
+
+  #+BEGIN_SRC sh
+    <package> :=
+        <package_name>[,<package_repo>][@[git_branch]] |
+        <package_repo>[@[git_branch]]
+  #+END_SRC
+
+  For example,
+
+  #+BEGIN_SRC sh
+    # install 'fmt' and 'dlib'
+    cpac -S fmt dlib
+
+    # install package with custom cmake_configure_option(s)
+    cpac -S fmt -- -GNinja -DCMAKE_INSTALL_PREFIX=/usr/local
+
+    # install package using repo url
+    cpac -S https://github.com/fmtlib/fmt -- -GNinja -DCMAKE_INSTALL_PREFIX=/usr/local
+
+    # install package with tag specified
+    cpac -S fmt@3.0.0 -- -GNinja -DCMAKE_INSTALL_PREFIX=/usr/local
+  #+END_SRC
+
+* License
+
+  =cpac= is licensed under [[https://opensource.org/licenses/MIT][the MIT License]].
+
