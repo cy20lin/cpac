@@ -12,19 +12,21 @@
   #+END_SRC
 
 ** install
-   
+
   #+BEGIN_SRC sh
     ./cpac/install.sh /install/prefix
   #+END_SRC
 
 * Quick start
 
+** sync
+
   You can install packages with following command:
 
   #+BEGIN_SRC sh
     cpac {-S --sync} <package(s)> [-- <cmake_configure_option(s)>]
   #+END_SRC
- 
+
   Where,
 
   #+BEGIN_SRC sh
@@ -48,6 +50,82 @@
     # install package with tag specified
     cpac -S fmt@3.0.0 -- -GNinja -DCMAKE_INSTALL_PREFIX=/usr/local
   #+END_SRC
+
+** download
+
+  You can download packages with following command:
+
+  #+BEGIN_SRC sh
+    cpac {--download} <package> [path]
+  #+END_SRC
+
+  For example,
+
+  #+BEGIN_SRC sh
+    cpac --download fmt
+    # works the same as
+    cpac --download https://github.com/fmtlib/fmt
+    git clone https://github.com/fmtlib/fmt
+  #+END_SRC
+
+** repo
+
+  You get list of repos to packages with following command:
+
+  #+BEGIN_SRC sh
+    cpac {--repo} <package(s)>
+  #+END_SRC
+
+  For example,
+
+  #+BEGIN_SRC sh
+    cpac --repo fmt dlib
+  #+END_SRC
+
+  Shows,
+
+  #+BEGIN_SRC text
+    https://github.com/fmtlib/fmt
+    https://github.com/davisking/dlib
+  #+END_SRC
+
+
+* Customize
+
+  You can customize =cpac= by providing a custom =~/.cpac.d/init.sh=. For example,
+
+  #+BEGIN_SRC sh
+    # loading predefined default init procedure
+    cpac_load_default_init
+
+    # loading custom package metadata
+    cpac_load_package_metadata ~/.cpac.d/packages.yml
+
+    # use Ninja if exists
+    generator="$(which ninja 2>/dev/null)"
+    test "${generator}" && generator_flag="-GNinja"
+
+    # specify default install prefix
+    install_prefix_flag="-DCMAKE_INSTALL_PREFIX=/where/to/install"
+
+    # set custom arguments
+    CPAC_CUSTOM_CONFIGURE_ARGS="${generator_flag} ${install_prefix_flag}"
+    CPAC_CUSTOM_BUILD_ARGS=
+    CPAC_CUSTOM_TEST_ARGS=
+    CPAC_CUSTOM_INSTALL_ARGS=
+  #+END_SRC
+
+  Where =~/.cpac.d/package.yml= may look like this,
+
+  #+BEGIN_SRC yaml
+    dlib:
+      repo: https://github.com/davisking/dlib
+    mylib:
+      repo: https://url.to/mylib
+  #+END_SRC
+
+  Note that, there *MUST* be *EXACTLY 2* space before the key =repo:=,
+  due to implementation restriction, =cpac= can only recognize a subset of =YAML=,
 
 * License
 

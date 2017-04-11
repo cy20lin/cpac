@@ -1,3 +1,9 @@
+##
+## Copyright (c) 2017 ChienYu Lin
+##
+## Author: ChienYu Lin <cy20lin@gmail.com>
+## License: MIT
+##
 dlib:
   repo: https://github.com/davisking/dlib
 range-v3:
@@ -62,11 +68,11 @@ magic_get:
   repo: https://github.com/apolukhin/magic_get
 eggs_variant:
   repo: https://github.com/eggs-cpp/variant
-# BoostProcess:
-#   repo: https://github.com/klemens-morgenstern/boost-process
-# boost:
-#   repo: https://github.com/boostorg/boost
-# evpp:
-#   repo: https://github.com/Qihoo360/evpp
-# co2:
-#   repo: https://github.com/jamboree/co2
+BoostProcess:
+  repo: https://github.com/klemens-morgenstern/boost-process
+boost:
+  repo: https://github.com/boostorg/boost
+evpp:
+  repo: https://github.com/Qihoo360/evpp
+co2:
+  repo: https://github.com/jamboree/co2
