@@ -19,9 +19,10 @@
 
 * Quick start
 
-** sync
+** Sync packages
 
-  You can install packages with following command:
+ With =-S= option, =cpac= will auto download, configure, build, test and install
+ those packages specified.
 
   #+BEGIN_SRC sh
     cpac {-S --sync} <package(s)> [-- <cmake_configure_option(s)>]
@@ -51,9 +52,9 @@
     cpac -S fmt@3.0.0 -- -GNinja -DCMAKE_INSTALL_PREFIX=/usr/local
   #+END_SRC
 
-** download
+** Download a package
 
-  You can download packages with following command:
+  Download specific =package= to (optional) =path=
 
   #+BEGIN_SRC sh
     cpac {--download} <package> [path]
@@ -68,9 +69,7 @@
     git clone https://github.com/fmtlib/fmt
   #+END_SRC
 
-** repo
-
-  You get list of repos to packages with following command:
+** Get list of repos corresponding to packages
 
   #+BEGIN_SRC sh
     cpac {--repo} <package(s)>
@@ -89,6 +88,11 @@
     https://github.com/davisking/dlib
   #+END_SRC
 
+** Get list of supported packages
+
+  #+BEGIN_SRC sh
+    cpac {--packages}
+  #+END_SRC
 
 * Customize
 
@@ -124,7 +128,7 @@
       repo: https://url.to/mylib
   #+END_SRC
 
-  Note that, there *MUST* be *EXACTLY 2* space before the key =repo:=,
+  Note that, there *MUST* be *EXACTLY 2* =space= before the key =repo:=,
   due to implementation restriction, =cpac= can only recognize a subset of =YAML=,
 
 * License

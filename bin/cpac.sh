@@ -6,6 +6,20 @@
 ## License: MIT
 ##
 
+cpac_pushd () {
+    cpac_dir_stack_top="$(expr ${cpac_dir_stack_top} + 1)"
+    eval "cpac_dir_stack_${cpac_dir_stack_top}=\"$PWD\""
+    cd "$1"
+}
+
+cpac_popd () {
+    test -z "${cpac_dir_stack_top}" && return
+    test "${cpac_dir_stack_top}" -le 0 && return
+    eval "cd \"\${cpac_dir_stack_${cpac_dir_stack_top}}\""
+    eval "cpac_dir_stack_${cpac_dir_stack_top}="
+    cpac_dir_stack_top="$(expr "${cpac_dir_stack_top}" - 1)"
+}
+
 cpac_message () {
     echo "-- [cpac] " "$@" 1>&2
 }
@@ -66,19 +80,27 @@ cpac_normalize_name () {
 }
 
 cpac_configure_build_install () {
+    cpac_error=0
     test -e "${cpac_binary_dir}" && rm -rf -- "${cpac_binary_dir}"
     mkdir -p -- "${cpac_binary_dir}"
-    pushd "${cpac_binary_dir}" >/dev/null
-    cpac_message "configuring..."
-    cmake ${CPAC_CUSTOM_CONFIGURE_ARGS} "${@}" "${cpac_source_dir}" || ( popd >/dev/null && return 1 )
-    cpac_message "building..."
-    cmake --build . ${CPAC_CUSTOM_BUILD_ARGS} || ( popd >/dev/null && return 1 )
-    cpac_message "testing..."
-    ctest ${CPAC_CUSTOM_TEST_ARGS} || ( popd >/dev/null && return 1 )
-    cpac_message "installing..."
-    cmake --build . --target install ${CPAC_CUSTOM_INSTALL_ARGS}  || ( popd >/dev/null && return 1 )
-    popd >/dev/null
-    return 0
+    cpac_pushd "${cpac_binary_dir}"
+    while true
+    do
+        cpac_message "configuring..."
+        cmake ${CPAC_CUSTOM_CONFIGURE_ARGS} "${@}" "${cpac_source_dir}" || cpac_error=1
+        test "${cpac_error}" -ne 0 && break
+        cpac_message "building..."
+        cmake --build . ${CPAC_CUSTOM_BUILD_ARGS} || cpac_error=1
+        test "${cpac_error}" -ne 0 && break
+        cpac_message "testing..."
+        ctest ${CPAC_CUSTOM_TEST_ARGS} || cpac_error=1
+        test "${cpac_error}" -ne 0 && break
+        cpac_message "installing..."
+        cmake --build . --target install ${CPAC_CUSTOM_INSTALL_ARGS} || cpac_error=1
+        break
+    done
+    cpac_popd
+    return ${cpac_error}
 }
 
 cpac_clear_binary_dir () {
@@ -88,27 +110,28 @@ cpac_clear_binary_dir () {
 }
 
 cpac_retrive_source () {
+    cpac_error=0
     cpac_message "retriving source..."
     git clone "${cpac_repo}" "${cpac_source_dir}" || return 1
-    pushd "${cpac_source_dir}" >/dev/null
+    cpac_pushd "${cpac_source_dir}"
     case "_${cpac_branch}" in
-    _) popd >/dev/null && return 0 ;;
+    _) cpac_popd && return 0 ;;
     _@)
         cpac_branch="tags/$(git describe --abbrev=0 --tags)"
         if test "${cpac_branch}" != "tags/"
         then
             cpac_message "git checkout '${cpac_branch}'"
-            git checkout "${cpac_branch}" || ( popd >/dev/null && return 1 )
+            git checkout "${cpac_branch}" || cpac_error=1
         fi
         ;;
     _@*)
         cpac_branch=$(echo "${cpac_branch}" | sed 's/^.//g')
         cpac_message "git checkout '${cpac_branch}'"
-        git checkout "${cpac_branch}" || ( popd >/dev/null && return 1 )
+        git checkout "${cpac_branch}" || cpac_error=1
         ;;
     esac
-    popd >/dev/null
-    return 0
+    cpac_popd
+    return ${cpac_error}
 }
 
 cpac_clear_source_dir () {
@@ -233,9 +256,9 @@ cpac_sync () {
     printf '%s\n' "${cpac_package_spec_list}" | while IFS= read -r cpac_spec
     do
         cpac_setup_current_package_variables "${cpac_spec}"
-        cpac_result=$?
+        cpac_error=$?
         cpac_show_current_package_variables
-        test "$cpac_result" \
+        test "$cpac_error" \
             && cpac_retrive_source \
             && cpac_configure_build_install "$@"
         cpac_clear_source_dir
@@ -252,10 +275,19 @@ cpac_repo () {
 }
 
 cpac_download () {
+    if test -z "$1"
+    then
+        cpac_help_download
+        return
+    fi
     cpac_setup_current_package_variables "$1"
-    cpac_result=$?
+    cpac_error=$?
     test "$2" && cpac_source_dir="$2" || cpac_source_dir="${cpac_name}"
-    test "$cpac_result"  && cpac_retrive_source
+    test "${cpac_error}"  && cpac_retrive_source
+}
+
+cpac_show_package_list () {
+    echo "${CPAC_PACKAGES}" | tr ':' '\n'
 }
 
 cpac_help_help () {
@@ -266,6 +298,7 @@ operations:
     cpac {-S --sync}  <package(s)> [-- <cmake_configure_option(s)>]
     cpac {--download} <package>    [path]
     cpac {--repo}     <package(s)>
+    cpac {--packages}
 
     use 'cpac {-h --help}' with an operation for available options
 EOF
@@ -308,11 +341,20 @@ description:
 EOF
 }
 
+cpac_help_packages () {
+    cat <<EOF
+usage:  cpac {--packages}
+description:
+  show list of supported packages
+EOF
+}
+
 cpac_help () {
     case "$1" in
     -S|--sync) cpac_help_sync ;;
     --download) cpac_help_download ;;
     --repo) cpac_help_repo ;;
+    --packages) cpac_help_packages ;;
     -h|--help|*) cpac_help_help ;;
     esac
 }
@@ -361,8 +403,11 @@ case "$1" in
     shift
     cpac_repo "$@"
     ;;
+--packages)
+    cpac_show_package_list
+    ;;
 -h|--help|*)
-    shift
+    test "$#" -gt 0 && shift
     cpac_help "$@"
     ;;
 esac
